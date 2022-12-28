@@ -1,0 +1,625 @@
+//- colors
+$color-you: #006db4;
+$color-opponent: #ff6528;
+
+//- mixins
+@mixin center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@mixin frosted-light {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px);
+}
+@mixin frosted-dark {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+}
+
+//- functions
+@function scaleLength($multiplier) {
+  @return calc(var(--scale, 5px) * $multiplier);
+}
+
+//- css variables
+:root {
+  --scale: max(5.25px, min(1.1vh, 0.6vw));
+  @media screen and (orientation: portrait) {
+    --scale: max(5.25px, 0.8vh);
+  }
+  @media screen and (max-aspect-ratio: 1/2) {
+    --scale: max(5.25px, 1.5vw);
+  }
+  @media screen and (orientation: landscape) and (max-aspect-ratio: 3/2) {
+    --scale: max(5.25px, 0.9vw);
+  }
+}
+
+//- typography
+:root {
+  font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'avenir next', avenir,
+    'helvetica neue', helvetica, ubuntu, roboto, noto, 'segoe ui', arial,
+    sans-serif;
+}
+li,
+p,
+button,
+a {
+  font-weight: 600;
+}
+.you {
+  color: $color-you;
+}
+.opponent {
+  color: $color-opponent;
+}
+
+//- accessibility
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+//- resets
+body {
+  position: relative;
+}
+p {
+  margin: 0;
+}
+ol,
+ul {
+  padding: 0;
+}
+li {
+  list-style: none;
+}
+button {
+  border: none;
+}
+
+//- ghost SVG symbol root
+.svg-symbols-root {
+  position: absolute;
+}
+
+//- background
+.pattern-background,
+.pattern-background > svg {
+  display: block;
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+//- outer flexbox
+.game {
+  main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: scaleLength(3.6);
+    position: relative;
+    min-height: 100vh;
+    min-width: 640px;
+    padding: scaleLength(3.2) 0;
+  }
+  .header-main {
+    position: absolute;
+  }
+  .section-current-turn,
+  .section-total-score {
+    flex-basis: auto;
+  }
+  .section-board {
+    flex-grow: 1;
+  }
+}
+
+//- instructions button
+.header-main {
+  bottom: 0;
+  right: 0;
+}
+.a-how-to-play {
+  @include center;
+  flex-direction: row-reverse;
+  gap: scaleLength(1.6);
+  position: absolute;
+  bottom: scaleLength(1.6);
+  right: scaleLength(1.6);
+  padding: scaleLength(1.28) scaleLength(1.6) scaleLength(1.28)
+    scaleLength(2.24);
+  border-radius: scaleLength(8);
+  background-color: rgba(0, 0, 0, 0);
+  will-change: background-color;
+  transition: background-color 0.5s;
+  text-decoration: none;
+  cursor: pointer;
+  svg {
+    width: scaleLength(3.6);
+    height: scaleLength(3.6);
+  }
+  span {
+    font-size: scaleLength(2);
+    color: white;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0.01;
+    will-change: opacity;
+    transition: opacity 0.5s;
+  }
+  &:hover,
+  &:focus {
+    background-color: rgba(0, 0, 0, 0.7);
+    span {
+      opacity: 1;
+    }
+  }
+}
+
+//- current turn
+.section-current-turn {
+  @include center;
+  position: relative;
+  flex-direction: column;
+  gap: scaleLength(3.2);
+  height: scaleLength(6.5);
+  z-index: 2;
+}
+.p-current-turn {
+  @include frosted-dark;
+  @include center;
+  font-size: scaleLength(3);
+  color: white;
+  line-height: 1;
+  gap: 0.4em;
+  overflow: hidden;
+  padding: scaleLength(1.2) scaleLength(1.3) scaleLength(1.2) scaleLength(2);
+  border-radius: scaleLength(1.6);
+  will-change: transform;
+  transition: transform 0.5s;
+  transform: translateY(0);
+  svg {
+    filter: brightness(1.2);
+    width: scaleLength(4.2);
+    height: scaleLength(4.2);
+  }
+  .you,
+  .opponent {
+    color: white;
+  }
+}
+.p-current-turn.out {
+  transform: translateY(scaleLength(-12));
+}
+.p-current-turn.hidden {
+  display: none;
+}
+
+//- board
+.section-board {
+  display: flex;
+  align-items: center;
+}
+.ol-lanes {
+  display: flex;
+  flex-direction: column;
+  gap: scaleLength(2.4);
+}
+
+//- lane
+.section-lane {
+  justify-content: center;
+  overflow: hidden;
+}
+.section-lane,
+.section-side,
+.ol-cells {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.section-side {
+  gap: scaleLength(3.2);
+  @include frosted-light;
+  margin-bottom: 20px;
+  position: relative;
+  padding: scaleLength(2.4) scaleLength(4);
+}
+.ol-cells {
+  gap: scaleLength(2);
+}
+.section-side.you,
+.section-side.you .ol-cells {
+  flex-direction: row-reverse;
+  border-bottom-left-radius: scaleLength(3);
+  border-top-left-radius: scaleLength(3);
+}
+.section-side.opponent {
+  border-bottom-right-radius: scaleLength(3);
+  border-top-right-radius: scaleLength(3);
+}
+.p-subscore {
+  font-size: max(1.5rem, scaleLength(5.36));
+  line-height: 1;
+  width: 3rem;
+  text-align: center;
+}
+
+//- add die button
+@keyframes shimmer {
+  0% {
+    background-position: 0 0;
+  }
+  20% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+button.button-add-die {
+  @include center;
+  width: scaleLength(9);
+  height: scaleLength(9);
+  border-radius: scaleLength(2);
+  background-color: rgba(0, 0, 0, 0);
+  cursor: pointer;
+  will-change: background-color;
+  transition: background-color 0.4s;
+  &:after {
+    @include center;
+    font-weight: 600;
+    font-size: scaleLength(3.2);
+    color: $color-you;
+    width: scaleLength(6);
+    height: scaleLength(6);
+    border-radius: scaleLength(1);
+    will-change: background-position;
+    @media not all and (prefers-reduced-motion) {
+      animation: shimmer 3s linear infinite;
+    }
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(255, 255, 255, 0.7) 45%,
+      rgba(255, 255, 255, 1) 50%,
+      rgba(255, 255, 255, 0.7) 55%,
+      rgba(255, 255, 255, 0.7) 100%
+    );
+    background-size: 300% 300%;
+    background-repeat: no-repeat;
+    transform-origin: 50% 50%;
+    transform: scaleLength(1);
+    transition: transform 0.4s;
+    content: '+';
+  }
+  &:hover,
+  &:focus {
+    background-color: $color-you;
+  }
+  &:hover:after,
+  &:focus:after {
+    transform: scaleLength(0.9);
+  }
+  &.die-opponent {
+    &::after {
+      color: $color-opponent;
+    }
+    &:hover,
+    &:focus {
+      background-color: $color-opponent;
+    }
+  }
+}
+.button-add-die[disabled] {
+  display: none;
+}
+
+//- cells
+.li-cell {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: scaleLength(1.95);
+  &:before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: none;
+    border-radius: scaleLength(1.95);
+    border: 0 solid #8e8e8e;
+    mix-blend-mode: color-burn;
+    z-index: 3;
+    pointer-events: none;
+  }
+  &.double:before {
+    border-width: scaleLength(0.5);
+  }
+  &.triple:before {
+    border-width: scaleLength(1);
+  }
+}
+.li-cell,
+.li-cell svg {
+  position: relative;
+  width: scaleLength(9);
+  height: scaleLength(9);
+}
+.cell-content {
+  position: absolute;
+  display: block;
+  inset: 0;
+  will-change: transform opacity;
+  transform-origin: 50% 50%;
+  transform: scale(1) rotate(0turn);
+  opacity: 1;
+  transition: transform 1s, opacity 1s;
+}
+$values: 1, 2, 3, 4, 5, 6, 'button';
+@each $value in $values {
+  .li-cell:not([data-die='#{$value}']) .cell-content[data-die='#{$value}'] {
+    transform: scale(0) rotate(0.5turn);
+    opacity: 0;
+    & span {
+      display: none;
+    }
+  }
+}
+.you use {
+  fill: $color-you;
+}
+.opponent use {
+  fill: $color-opponent;
+}
+
+//- total score
+.section-total-score {
+  @include center;
+  @include frosted-dark;
+  gap: scaleLength(2.5);
+  font-size: scaleLength(3);
+  padding: scaleLength(1) scaleLength(1.5);
+  border-radius: scaleLength(1.6);
+  z-index: 4;
+  h2 {
+    font-size: scaleLength(3);
+    color: white;
+    order: 2;
+    margin: 0;
+  }
+  .p-score {
+    margin: 0;
+  }
+  .p-score.you {
+    order: 1;
+    color: lighten($color-you, 25%);
+  }
+  .p-score.opponent {
+    order: 3;
+    color: lighten($color-opponent, 25%);
+  }
+}
+
+//- dialog
+.dialog {
+  @include center;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: darken(transparentize($color-you, 0.1), 20%);
+}
+.dialog-inner {
+  @include center;
+  flex-direction: column;
+  gap: scaleLength(2);
+  border-radius: scaleLength(1.6);
+  background: white;
+  padding: scaleLength(2);
+  overflow: hidden;
+}
+.dialog-fieldset {
+  @include center;
+  gap: scaleLength(2);
+  padding: scaleLength(3);
+}
+.dialog-title {
+  font-size: scaleLength(3);
+  margin: scaleLength(-2) scaleLength(-2) 0 scaleLength(-2);
+  background: $color-you;
+  width: calc(100% + scaleLength(4));
+  padding: scaleLength(2);
+  text-align: center;
+  color: white;
+}
+.p-dialog-score {
+  color: gray;
+  font-size: scaleLength(3);
+  line-height: 1;
+  margin: 0;
+  font-size: scaleLength(6);
+  background: white;
+  width: calc(100% + scaleLength(4));
+  padding: scaleLength(2);
+  text-align: center;
+}
+.dialog-legend,
+.dialog-input,
+.dialog-button {
+  font-size: scaleLength(2);
+}
+.dialog-button {
+  cursor: pointer;
+}
+.dialog-button:hover,
+.dialog-button:focus {
+  background: darken($color-you, 25%);
+}
+.dialog-input {
+  padding: scaleLength(1);
+}
+.dialog-button {
+  background: $color-you;
+  border-radius: scaleLength(0.4);
+  color: white;
+  padding: scaleLength(1.3) scaleLength(1.6);
+}
+.dialog-message,
+.game-over-waiting {
+  @include center;
+  font-size: scaleLength(2.5);
+  font-weight: 400;
+  gap: 0.5em;
+}
+.game-over-waiting {
+  padding: scaleLength(3) scaleLength(4);
+  border-radius: scaleLength(1.6);
+  background: white;
+}
+.spinner {
+  animation: rotate 2s linear infinite;
+  z-index: 2;
+  width: 2em;
+  height: 2em;
+  & .spinner-path {
+    stroke: $color-you;
+    stroke-linecap: round;
+    animation: dash 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+/*
+ * Portrait Styles
+ */
+@media screen and (orientation: portrait) {
+  // outer flexbox
+  body.game main {
+    overflow: hidden;
+    min-width: auto;
+    height: auto;
+    width: 100vw;
+    padding: 0;
+  }
+  // current turn
+  .p-current-turn {
+    border-radius: 0 0 scaleLength(1.6) scaleLength(1.6);
+  }
+  // board
+  .ol-lanes {
+    flex-direction: row;
+  }
+  .slots {
+    height: scaleLength(31);
+    width: scaleLength(9);
+  }
+  .slots:before {
+    background-size: 100% auto;
+    background-image: url("data:image/svg+xml,%3Csvg width='90' height='110' viewBox='0 0 90 110' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='90' height='90' rx='20' fill='black'/%3E%3C/svg%3E%0A");
+  }
+  // total score
+  .section-total-score {
+    border-radius: scaleLength(1.6) scaleLength(1.6) 0 0;
+  }
+}
+/*
+ * Extreme Narrow
+ */
+@media screen and (max-width: 319px) {
+  .p-current-turn {
+    flex-direction: column;
+  }
+}
+
+/*
+  * Accessible Type and Snap Messages
+  */
+// @media screen and (max-width: 830px),
+// screen and (min-aspect-ratio: 1/3)
+@media screen and (max-width: 830px) {
+  body.game main {
+    padding: 0;
+  }
+  .p-current-turn,
+  .section-total-score {
+    background: black;
+  }
+  .p-current-turn {
+    border-radius: 0 0 scaleLength(1.6) scaleLength(1.6);
+  }
+  .section-total-score {
+    border-radius: scaleLength(1.6) scaleLength(1.6) 0 0;
+  }
+  .section-lane div {
+    display: flex;
+  }
+  .section-lane .section-side {
+    margin: 0 10px;
+    text-align: center;
+  }
+  .section-lane .section-side {
+    &.opponent {
+      border-bottom-right-radius: 0;
+      border-top-right-radius: calc(var(--scale, 5px) * 3);
+      border-top-left-radius: calc(var(--scale, 5px) * 3);
+    }
+  }
+  .section-lane .section-side {
+    &.you {
+      border-top-right-radius: 0;
+      border-top-left-radius: 0;
+      border-bottom-right-radius: calc(var(--scale, 5px) * 3);
+      border-bottom-left-radius: calc(var(--scale, 5px) * 3);
+    }
+  }
+}
+
+@media screen and (max-width: 830px) {
+  .ol-lanes {
+    flex-direction: row;
+  }
+  // lane
+  .section-lane,
+  .section-side,
+  .ol-cells,
+  .opponent.section-side .ol-cells {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+  .you.section-side,
+  .you.section-side .ol-cells {
+    justify-content: end-start;
+    flex-direction: column !important;
+  }
+}
