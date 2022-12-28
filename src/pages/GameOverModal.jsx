@@ -61,9 +61,10 @@ function GameOverModal() {
               </h2>
             )}
 
-            <p className="p-dialog-score">
+            <p className="p-dialog-score" id="game-over-score">
+            <span class="sr-only">{total}</span>
+            <span class="sr-only">{totalTwo}</span>
               <span className="span-dialog-score you" id="game-over-score-you">
-                <span class="sr-only">{total}</span>
                 {total}
               </span>
               <span> – </span>
@@ -71,7 +72,6 @@ function GameOverModal() {
                 className="span-dialog-score opponent"
                 id="game-over-score-opponent"
               >
-                <span class="sr-only">{totalTwo}</span>
                 {totalTwo}
               </span>
             </p>
