@@ -3,8 +3,15 @@ import DataContext from '../context/DataContext'
 import useHooks from '../controllers'
 
 function GameOverModal() {
-  const { finalBoard, handleMutation, id, total, totalTwo, setTotal, setTotalTwo } =
-    useContext(DataContext)
+  const {
+    finalBoard,
+    handleMutation,
+    id,
+    total,
+    totalTwo,
+    setTotal,
+    setTotalTwo,
+  } = useContext(DataContext)
   const [none, setNone] = useState('none')
   const { useSession } = useHooks()
   const { uid } = useSession()
@@ -34,7 +41,12 @@ function GameOverModal() {
           aria-labelledby="game-over-title"
           style={{ display: none }}
         >
-          <div className="dialog-inner" id="game-over-inner">
+          <div
+            className="dialog-inner"
+            id="game-over-inner"
+            aria-live="assertive"
+            role="status"
+          >
             {total > totalTwo &&
               (finalBoard.player1 === uid ? (
                 <h2 className="dialog-title" id="game-over-title">
@@ -62,8 +74,6 @@ function GameOverModal() {
             )}
 
             <p className="p-dialog-score" id="game-over-score">
-            <span class="sr-only">{total}</span>
-            <span class="sr-only">{totalTwo}</span>
               <span className="span-dialog-score you" id="game-over-score-you">
                 {total}
               </span>
